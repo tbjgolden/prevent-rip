@@ -117,7 +117,7 @@
     </p>
     <div class="donation">
       <div class="donation-currencies"></div>
-      <input class="donation-amount" placeholder="100" type="tel" value="100">
+      <input class="donation-amount" placeholder="100" type="tel" value="" autofocus>
     </div>
     <div style="padding-top:2rem">You could purchase <span class="malaria-nets"></span> insecticide-treated bed nets for people in areas with infected mosquitos.</div>
     <div class="malaria-nets-images">
@@ -126,7 +126,7 @@
   </div>
   <script>
     (() => {
-      let prevValue = '100';
+      let prevValue = '';
       window.setInputFilter = (inputEl, inputFilter) => {
         ['input', 'keydown', 'keyup', 'mousedown', 'mouseup', 'select', 'contextmenu', 'drop'].forEach(eventName => {
           inputEl.addEventListener(eventName, function () {
