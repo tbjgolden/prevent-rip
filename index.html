@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prevent.RIP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html {
+      font-size: 16px;
+    }
+    body {
+      font-family: QuattroV, Quattro, sans-serif;
+      background: #000;
+      color: #fff;
+      line-height: 1;
+    }
+    * {
+      box-sizing: border-box;
+      font: inherit;
+      color: inherit;
+      line-height: inherit;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      background: transparent;
+    }
+    *:focus {
+      outline: 2px solid rgba(127,127,127,.4);
+    }
+    button:not(.active):hover {
+      background: rgba(127,127,127,.4);
+    }
+    .block {
+      padding: 2rem;
+    }
+    .block-header {
+      font-size: 3rem;
+      color: #f00;
+    }
+    .donation-amount {
+      padding: 1rem 1rem 1rem 3rem;
+      font-size: 4rem;
+      max-width: 100%;
+      width: 14rem;
+      background: #111;
+    }
+    .donation {
+      margin-top: 1rem;
+      position: relative;
+    }
+    .donation-currencies {
+      position: absolute;
+      top: calc(50% + .1rem);
+      left: 1rem;
+      width: 2rem;
+      height: 3rem;
+      transform: translateY(-50%);
+      z-index: 2;
+    }
+    .donation-currency {
+      display: block;
+      width: 100%;
+      font-size: 1rem;
+      text-align: center;
+      color: #888;
+    }
+    .donation-currency.active {
+      color: #fff;
+    }
+    .malaria-nets {
+      color: #0f0;
+    }
+    .malaria-nets-images {
+      margin-top: 2rem;
+      background: url(net.svg);
+      background-size: 10% auto;
+      padding-top: 10%;
+      position: relative;
+    }
+    .malaria-nets-images-modulo {
+      background: #000;
+      padding-top: 10%;
+      height: 0;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+    @font-face {
+      font-family: 'QuattroV';
+      src: url('quattro.ttf') format('variations');
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Quattro';
+      src: url('quattro.ttf') format('truetype');
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'QuattroV';
+      src: url('quattroi.ttf') format('variations');
+      font-style: italic;
+    }
+    @font-face {
+      font-family: 'Quattro';
+      src: url('quattroi.ttf') format('truetype');
+      font-style: italic;
+    }
+    @media (min-width: 800px) { html { font-size: 18px; } }
+  </style>
+</head>
+<body>
+  <div class="block">
+    <div class="block-header"><span style="color:#fff;">Prevent</span>.RIP</div>
+    <p style="padding-top:2rem">
+      Giving life is <span style="color:#0f0;">easy</span>:
+    </p>
+    <div class="donation">
+      <div class="donation-currencies"></div>
+      <input class="donation-amount" placeholder="100" type="tel" value="100">
+    </div>
+    <div style="padding-top:2rem">You could purchase <span class="malaria-nets"></span> insecticide-treated bed nets for people in areas with infected mosquitos.</div>
+    <div class="malaria-nets-images">
+      <div class="malaria-nets-images-modulo"></div>
+    </div>
+  </div>
+  <script>
+    (() => {
+      let prevValue = '100';
+      window.setInputFilter = (inputEl, inputFilter) => {
+        ['input', 'keydown', 'keyup', 'mousedown', 'mouseup', 'select', 'contextmenu', 'drop'].forEach(eventName => {
+          inputEl.addEventListener(eventName, function () {
+            if (inputFilter(this.value)) {
+              this.oldValue = this.value;
+              this.oldSelectionStart = this.selectionStart;
+              this.oldSelectionEnd = this.selectionEnd;
+            } else if (this.hasOwnProperty('oldValue')) {
+              this.value = this.oldValue;
+              this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+            }
+          });
+        });
+      };
+      const donationAmountEl = document.querySelector('.donation-amount');
+      window.setInputFilter(donationAmountEl, value => /^[0-9]*(\.[0-9]{1,2})?$/.test(value));
+      donationAmountEl.addEventListener('input', event => {
+        if (event.target.value !== prevValue) {
+          RIP.onAmountChange(event.target.value);
+          prevValue = event.target.value;
+        }
+      });
+    })();
+
+    (() => {
+      const RIP = {
+        state: {
+          currencies: [
+            ['USD', 1],
+            ['EUR', 1.14],
+            ['GBP', 1.27]
+          ],
+          activeAmount: '100',
+          activeCurrency: 0
+        },
+        onCurrClick: newIndex => {
+          if (newIndex !== RIP.state.activeCurrency) {
+            RIP.state.activeCurrency = newIndex;
+            RIP.render(true);
+          }
+        },
+        onAmountChange: newAmount => {
+          if (newAmount !== RIP.state.activeAmount) {
+            RIP.state.activeAmount = newAmount || '100';
+            RIP.render();
+          }
+        },
+        render: () => {
+          console.log('rendering', RIP.state);
+          document.querySelector('.donation-amount').style.width = `calc(4rem + ${RIP.state.activeAmount.length}ch)`;
+          document.querySelector('.donation-currencies').innerHTML = RIP.state.currencies.map((c, i) => `<button class="donation-currency${(i === RIP.state.activeCurrency) ? ' active' : ''}" onclick="RIP.onCurrClick(${i})">${c[0]}</button>`).join('');
+          
+          const numberOfNets = Math.floor(parseFloat(RIP.state.activeAmount) * RIP.state.currencies[RIP.state.activeCurrency][1] / 2);
+          document.querySelector('.malaria-nets').innerHTML = `${numberOfNets}`;
+
+          document.querySelector('.malaria-nets-images').style.paddingTop = `${Math.ceil(numberOfNets / 10)}0%`;
+          document.querySelector('.malaria-nets-images-modulo').style.width = `${(Math.ceil(numberOfNets / 10) * 10) - numberOfNets}0%`;
+        }
+      };
+      window.RIP = RIP;
+      RIP.render();
+    })();
+  </script>
+</body>
+</html>
