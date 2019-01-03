@@ -31,11 +31,17 @@
     button:not(.active):hover {
       background: rgba(127,127,127,.4);
     }
+    .mt1 {
+      margin-top: 1rem;
+    }
+    .mt2 {
+      margin-top: 2rem;
+    }
     .block {
       padding: 2rem;
     }
     .block-header {
-      font-size: 3rem;
+      font-size: 2.5rem;
       color: #f00;
     }
     .donation-amount {
@@ -46,7 +52,6 @@
       background: #111;
     }
     .donation {
-      margin-top: 1rem;
       position: relative;
     }
     .donation-currencies {
@@ -68,11 +73,12 @@
     .donation-currency.active {
       color: #fff;
     }
-    .malaria-nets {
+    .malaria-nets,
+    .lives-saved-number,
+    .probability-of-saving-a-life-number {
       color: #0f0;
     }
     .malaria-nets-images {
-      margin-top: 2rem;
       background: url(net.svg);
       background-size: 10% auto;
       padding-top: 10%;
@@ -85,6 +91,21 @@
       position: absolute;
       bottom: 0;
       right: 0;
+    }
+    .amf {
+      line-height: 1.3;
+    }
+    .donate-link {
+      display: inline-block;
+      outline: 2px solid #f00;
+    }
+    .donate-link:hover, .donate-link:focus {
+      outline-color: #0f0;
+    }
+    .donate-button {
+      padding: 1rem;
+      cursor: pointer;
+      font-weight: bold;
     }
     @font-face {
       font-family: 'QuattroV';
@@ -107,21 +128,31 @@
       font-style: italic;
     }
     @media (min-width: 800px) { html { font-size: 18px; } }
+    @media (min-width: 1200px) { html { font-size: 20px; } }
   </style>
 </head>
 <body>
   <div class="block">
     <div class="block-header"><span style="color:#fff;">Prevent</span>.RIP</div>
     <p style="padding-top:2rem">
-      Giving life is <span style="color:#0f0;">easy</span>:
+      You don't have to be a doctor to save lives:
     </p>
-    <div class="donation">
+    <div class="donation mt1">
       <div class="donation-currencies"></div>
       <input class="donation-amount" placeholder="100" type="tel" value="" autofocus>
     </div>
-    <div style="padding-top:2rem">You could purchase <span class="malaria-nets"></span> insecticide-treated bed nets for people in areas with infected mosquitos.</div>
-    <div class="malaria-nets-images">
-      <div class="malaria-nets-images-modulo"></div>
+    <div class="amf mt2">
+      <div>You could purchase <span class="malaria-nets"></span> insecticide-treated bed net<span class="malaria-nets-plural">s</span> for people in areas with infected mosquitos.</div>
+      <div class="lives-saved mt1">You would save (on average) <span class="lives-saved-number"></span> lives.</div>
+      <div class="probability-of-saving-a-life mt1">There would be a <span class="probability-of-saving-a-life-number"></span> chance that you would save at least one person's life.</div>
+      <a class="donate-link mt1">
+        <button class="donate-button">
+          Give life
+        </button>
+      </a>
+      <div class="malaria-nets-images mt1">
+        <div class="malaria-nets-images-modulo"></div>
+      </div>
     </div>
   </div>
   <script>
@@ -142,7 +173,7 @@
         });
       };
       const donationAmountEl = document.querySelector('.donation-amount');
-      window.setInputFilter(donationAmountEl, value => /^[0-9]*(\.[0-9]{1,2})?$/.test(value));
+      window.setInputFilter(donationAmountEl, value => /^[0-9]{0,7}(\.[0-9]{1,2})?$/.test(value));
       donationAmountEl.addEventListener('input', event => {
         if (event.target.value !== prevValue) {
           RIP.onAmountChange(event.target.value);
@@ -152,12 +183,23 @@
     })();
 
     (() => {
+      const E = 2.718281828459045;
+      const Factorial = n => (([1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 20922789888000, 355687428096000, 6402373705728000])[n] || Infinity);
+      window.Poisson = (lambda, n) => (Math.pow(E, -lambda) * Math.pow(lambda, n) / Factorial(n));
+      window.FormatPercentage = n => {
+        const delta = Math.min(n, 1 - n);
+        if (delta <= 1e-7) return (n <= 1e-7) ? '0' : '100';
+        return Number(100 * n).toFixed(-Math.floor(Math.log10(delta)));
+      };
+    })();
+
+    (() => {
       const RIP = {
         state: {
           currencies: [
-            ['USD', 1],
-            ['EUR', 1.14],
-            ['GBP', 1.27]
+            ['USD', 1, 'https://www.paypal.com/us/fundraiser/charity/113632'],
+            ['EUR', 1.14, 'https://www.paypal.com/fundraiser/charity/3181936'],
+            ['GBP', 1.27, 'https://www.paypal.com/fundraiser/charity/3181936']
           ],
           activeAmount: '100',
           activeCurrency: 0
@@ -178,12 +220,24 @@
           console.log('rendering', RIP.state);
           document.querySelector('.donation-amount').style.width = `calc(4rem + ${RIP.state.activeAmount.length}ch)`;
           document.querySelector('.donation-currencies').innerHTML = RIP.state.currencies.map((c, i) => `<button class="donation-currency${(i === RIP.state.activeCurrency) ? ' active' : ''}" onclick="RIP.onCurrClick(${i})">${c[0]}</button>`).join('');
-          
+
           const numberOfNets = Math.floor(parseFloat(RIP.state.activeAmount) * RIP.state.currencies[RIP.state.activeCurrency][1] / 2);
           document.querySelector('.malaria-nets').innerHTML = `${numberOfNets}`;
 
+          document.querySelector('.amf').style.display = (numberOfNets > 0) ? 'block' : 'none';
+          document.querySelector('.malaria-nets-plural').style.display = (numberOfNets === 1) ? 'none' : 'inline';
+
           document.querySelector('.malaria-nets-images').style.paddingTop = `${Math.ceil(numberOfNets / 10)}0%`;
           document.querySelector('.malaria-nets-images-modulo').style.width = `${(Math.ceil(numberOfNets / 10) * 10) - numberOfNets}0%`;
+
+          const livesSaved = Math.round(numberOfNets / 1723);
+          const probabilityOfLifeSaved = 1 - Poisson(numberOfNets / 1723, 0);
+          document.querySelector('.lives-saved').style.display = (livesSaved > 2) ? 'block' : 'none';
+          document.querySelector('.lives-saved-number').innerHTML = `${livesSaved}`;
+          document.querySelector('.probability-of-saving-a-life-number').innerHTML = FormatPercentage(probabilityOfLifeSaved) + '%';
+
+          const donateUrl = RIP.state.currencies[RIP.state.activeCurrency][2];
+          document.querySelector('.donate-link').setAttribute('href', donateUrl);
         }
       };
       window.RIP = RIP;
