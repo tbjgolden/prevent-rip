@@ -3,13 +3,12 @@
 <head>
   <title>Prevent.RIP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preload" href="quattro.ttf" as="font" crossorigin="anonymous">
   <style>
     html {
       font-size: 16px;
     }
     body {
-      font-family: QuattroV, Quattro, sans-serif;
+      font-family: Quattro, sans-serif;
       background: #000;
       color: #fff;
       line-height: 1;
@@ -25,6 +24,7 @@
       margin: 0;
       border: 0;
       background: transparent;
+      font-variation-settings: 'slnt' 0;
     }
     *:focus {
       outline: 2px solid rgba(127,127,127,.4);
@@ -108,25 +108,12 @@
       cursor: pointer;
       font-weight: bold;
     }
-    @font-face {
-      font-family: 'QuattroV';
-      src: url('quattro.ttf') format('variations');
-      font-style: normal;
+    ::-webkit-input-placeholder {
+      line-height: 5rem;
     }
     @font-face {
       font-family: 'Quattro';
-      src: url('quattro.ttf') format('truetype');
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'QuattroV';
-      src: url('quattroi.ttf') format('variations');
-      font-style: italic;
-    }
-    @font-face {
-      font-family: 'Quattro';
-      src: url('quattroi.ttf') format('truetype');
-      font-style: italic;
+      src: url('quattro.woff2') format('woff2-variations'), url('quattro.woff2') format('woff2');
     }
     @media (min-width: 800px) { html { font-size: 18px; } }
     @media (min-width: 1200px) { html { font-size: 20px; } }
