@@ -123,7 +123,7 @@
   <div class="block">
     <div class="block-header"><span style="color:#fff;">Prevent</span>.RIP</div>
     <p style="padding-top:2rem">
-      You don't have to be a doctor to save lives:
+      It costs less than you think to save lives:
     </p>
     <div class="donation mt1">
       <div class="donation-currencies"></div>
@@ -138,9 +138,6 @@
           Give life
         </button>
       </a>
-      <div class="malaria-nets-images mt1">
-        <div class="malaria-nets-images-modulo"></div>
-      </div>
     </div>
   </div>
   <script>
@@ -174,6 +171,9 @@
       const E = 2.718281828459045;
       const Factorial = n => (([1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 20922789888000, 355687428096000, 6402373705728000])[n] || Infinity);
       window.Poisson = (lambda, n) => (Math.pow(E, -lambda) * Math.pow(lambda, n) / Factorial(n));
+
+      
+
       window.FormatPercentage = n => {
         const delta = Math.min(n, 1 - n);
         if (delta <= 1e-7) return (n <= 1e-7) ? '0' : '100';
@@ -214,9 +214,6 @@
 
           document.querySelector('.amf').style.display = (numberOfNets > 0) ? 'block' : 'none';
           document.querySelector('.malaria-nets-plural').style.display = (numberOfNets === 1) ? 'none' : 'inline';
-
-          document.querySelector('.malaria-nets-images').style.paddingTop = `${Math.ceil(numberOfNets / 10)}0%`;
-          document.querySelector('.malaria-nets-images-modulo').style.width = `${(Math.ceil(numberOfNets / 10) * 10) - numberOfNets}0%`;
 
           const livesSaved = Math.round(numberOfNets / 1723);
           const probabilityOfLifeSaved = 1 - Poisson(numberOfNets / 1723, 0);
