@@ -123,7 +123,7 @@ export const Home = (): JSX.Element => {
             <small>{formatted}</small>
           </p>
           <p>
-            you'd pay for {format(usdEquiv / currentUsdNetPrice)}{' '}
+            you{"'"}d pay for {format(usdEquiv / currentUsdNetPrice)}{' '}
             insecticide treated bed net
             {format(usdEquiv / currentUsdNetPrice) === '1' ? '' : 's'},
             which would protect approximately {Math.round(usdEquiv * 1.8 / currentUsdNetPrice)} people
@@ -138,13 +138,13 @@ export const Home = (): JSX.Element => {
                 : "people's lives"}
               <br />
               <small>
-                there'd be a {format(probabilityLifeSaved * 100)}% chance your
+                there{"'"}d be a {format(probabilityLifeSaved * 100)}% chance your
                 donation would save a life
               </small>
             </p>
           ) : (
             <p>
-              there'd be a {format(probabilityLifeSaved * 100)}% chance your
+              there{"'"}d be a {format(probabilityLifeSaved * 100)}% chance your
               donation would save a life
               <br />
               <small>
