@@ -156,7 +156,13 @@ export const Home = (): JSX.Element => {
               </small>
             </p>
           )}
-          <a>
+          <a href={
+            ({
+              "USD": "https://www.paypal.com/us/fundraiser/charity/113632",
+              "EUR": "https://www.againstmalaria.com/donate.aspx",
+              "GBP": "https://www.paypal.com/gb/fundraiser/charity/3181936"
+            })[currency]
+          }>
             <button className="donate">Donate and save lives</button>
           </a>
         </div>
